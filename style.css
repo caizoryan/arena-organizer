@@ -1,0 +1,45 @@
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+body {
+	font-family: monospace;
+	font-size: 1.2em;
+	line-height: 1.3em;
+}
+
+main {
+  display: grid;
+  grid-template-rows: 10% 90%;
+  padding: 1em;
+  height: 100vh;
+}
+
+.channel-container {
+  display: grid;
+  grid-template-columns: 65% 35%;
+	height: 100%;
+}
+
+.top-bar {
+	border-bottom: 1px solid black;
+}
+
+.channels {
+  width: 100%;
+  height: 100%;
+  overflow-y: scroll;
+}
+
+.channel-item {
+  display: grid;
+  grid-template-columns: 20% 70% 10%;
+	border-bottom: 1px solid #aaa;
+	padding: .5em;
+}
+
+.channel-item[selected='true']{
+	background-color: yellow;
+}

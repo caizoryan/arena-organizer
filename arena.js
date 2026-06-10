@@ -1,11 +1,8 @@
 import {auth} from './auth.js'
-async function getUserChannels(userSlugOrId, options = {}) {
-  const {
-    page = 1,
-    per = 24,
-    sort = "created_at_desc",
-  } = options;
+export async function getUserChannels(userSlugOrId, options = {}) {
+  const { page , per  } = options;
 
+	let sort = "created_at_desc"
   const params = new URLSearchParams({ page, per, sort });
 
   const headers = { "Content-Type": "application/json" };
@@ -21,6 +18,26 @@ async function getUserChannels(userSlugOrId, options = {}) {
     throw new Error(error.details?.message ?? `HTTP ${response.status}`);
   }
 
-  const data = await response.json();
+  let data = await response.json();
   return data;
+}
+
+export async function streamUserChannels(userSlugOrId, senderFn, options = {}) {
+  // Fetch and send first page
+  const firstPage = await getUserChannels(userSlugOrId, { ...options, page: 1 });
+  senderFn(firstPage.data, firstPage.meta);
+
+  const { total_pages } = firstPage.meta;
+  if (total_pages <= 1) return;
+
+  // Fetch remaining pages in parallel, sending each as it resolves
+  const remainingPages = Array.from({ length: total_pages - 1 }, (_, i) => i + 2);
+	console.log(remainingPages)
+
+  await Promise.all(
+    remainingPages.map(async (page) => {
+      const result = await getUserChannels(userSlugOrId, { ...options, page });
+      senderFn(result.data, result.meta);
+    })
+  );
 }
